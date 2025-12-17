@@ -23,5 +23,5 @@ Starting server (Default port 5990)
 ## Authors
 
 - [@Prottoy Roy](https://www.github.com/prottoy83)
-- [@Syed Mahmud Rafid](https://www.github.com/syedrafid83)
+- [@Syed Mahmud Rafid](https://github.com/syedrafid33)
 - [@Md. Siddique Bishwas](https://www.github.com/)
