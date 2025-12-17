@@ -7,7 +7,7 @@ Server Setup
 
 ```bash
   cd server
-  npm i express
+  npm install
 ```
 
 ## Run
