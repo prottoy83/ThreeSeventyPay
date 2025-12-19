@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 17, 2025 at 05:33 PM
+-- Generation Time: Dec 19, 2025 at 06:45 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -205,7 +205,9 @@ ALTER TABLE `transaction_record`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`uid`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `uq_user_nid` (`nid`),
+  ADD UNIQUE KEY `uq_user_email` (`email`),
+  ADD UNIQUE KEY `uq_user_phone` (`phone`);
 
 --
 -- AUTO_INCREMENT for dumped tables
