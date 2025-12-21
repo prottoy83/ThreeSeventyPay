@@ -33,6 +33,9 @@ Start Client (Default Port: 5173)
    npm run dev
 ```
 
+For all the error codes checkout : https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status
+
+
 ## Authors
 
 - [@Prottoy Roy](https://www.github.com/prottoy83)
