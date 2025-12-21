@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 17, 2025 at 05:33 PM
+-- Generation Time: Dec 21, 2025 at 07:23 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `three_seventy_pay`
+-- Database: `threeseventypay`
 --
 
 -- --------------------------------------------------------
@@ -141,8 +141,16 @@ CREATE TABLE `user` (
   `email` varchar(100) NOT NULL,
   `phone` varchar(20) NOT NULL,
   `dob` date DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `Password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`uid`, `nid`, `first_name`, `last_name`, `email`, `phone`, `dob`, `created_at`, `Password`) VALUES
+(1, '3770002020', 'Prottoy', 'Roy', 'prottoyroy@test.com', '01822222222', '2003-01-01', '2025-12-21 18:21:49', '$2b$10$ah4Oc/2mxglHmfrBk4GB5OHoAy8js3kJygu4msxiadYega9.SGI3O');
 
 --
 -- Indexes for dumped tables
@@ -205,7 +213,9 @@ ALTER TABLE `transaction_record`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`uid`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `nid` (`nid`),
+  ADD UNIQUE KEY `phone` (`phone`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -257,7 +267,7 @@ ALTER TABLE `transaction_record`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
