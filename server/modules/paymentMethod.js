@@ -4,7 +4,7 @@ const db = require("../config/db");
 const router = express.Router();
 
 router.get('/method/:uid', (req,res) => {
-    const query = "SELECT pm_id, method_type, acc_no, routing_number, card_no, exp_date FROM payment_method WHERE user_id = ?"
+    const query = "SELECT pm_id, method_type, acc_no, routing_number, card_no, exp_date, branch_name FROM payment_method WHERE user_id = ?"
 
     db.query(query, [req.params.uid], (err, results) => {
         if (err) {

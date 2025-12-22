@@ -10,6 +10,7 @@ type Props = {
 
 export default function AddPaymentModal({ isOpen, type, uid, onClose, onAdded }: Props) {
   const [bank_name, setBankName] = useState('')
+  const [branch_name, setBranchName] = useState('')
   const [acc_no, setAccNo] = useState('')
   const [routing_number, setRoutingNumber] = useState('')
 
@@ -22,7 +23,7 @@ export default function AddPaymentModal({ isOpen, type, uid, onClose, onAdded }:
 
   useEffect(() => {
     if (!isOpen) {
-      setBankName(''); setAccNo(''); setRoutingNumber('');
+      setBankName(''); setBranchName(''); setAccNo(''); setRoutingNumber('');
       setCardNo(''); setExpDate(''); setCvv(''); setError(null); setSaving(false)
     }
   }, [isOpen])
@@ -34,7 +35,7 @@ export default function AddPaymentModal({ isOpen, type, uid, onClose, onAdded }:
       setSaving(true)
       setError(null)
       const body = type === 'bank'
-        ? { method: 'bank', bank_name, acc_no, routing_number }
+        ? { method: 'bank', bank_name, branch_name, acc_no, routing_number }
         : { method: 'card', card_no, exp_date, cvv }
 
       const res = await fetch(`http://localhost:5990/payMethods/addMethod/${uid}`, {
@@ -68,6 +69,9 @@ export default function AddPaymentModal({ isOpen, type, uid, onClose, onAdded }:
           <div className="modal__body">
             <label className="form__label">Bank Name
               <input className="form__input" value={bank_name} onChange={e => setBankName(e.target.value)} placeholder="e.g. Chase" />
+            </label>
+            <label className="form__label">Branch Name
+              <input className="form__input" value={branch_name} onChange={e => setBranchName(e.target.value)} placeholder="e.g. Downtown" />
             </label>
             <label className="form__label">Account Number
               <input className="form__input" value={acc_no} onChange={e => setAccNo(e.target.value)} placeholder="e.g. 123456789" />

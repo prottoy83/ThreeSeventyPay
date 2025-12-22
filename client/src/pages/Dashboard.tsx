@@ -13,6 +13,7 @@ type PaymentMethod = {
   pm_id: number
   method_type: 'bank' | 'card'
   bank_name?: string | null
+  branch_name?: string | null
   acc_no?: string | null
   routing_number?: string | null
   card_no?: string | null
@@ -147,6 +148,7 @@ export default function Dashboard() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
                       <p style={{ color: 'var(--muted)', fontSize: 14, marginBottom: 4 }}>{account.bank_name || 'Bank Account'}</p>
+                      {account.branch_name && <h2 style={{ color: 'var(--muted)', fontSize: 18, marginBottom: 8 }}>Bank: {account.branch_name}</h2>}
                       <p style={{ fontSize: 18, fontWeight: 600 }}>{last4 ? `•••• ${last4}` : `Account #${account.pm_id}`}</p>
                     </div>
                     <button 
