@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 21, 2025 at 07:26 PM
+-- Generation Time: Dec 22, 2025 at 10:10 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -75,11 +75,13 @@ CREATE TABLE `payment_method` (
   `method_type` varchar(10) DEFAULT NULL,
   `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `acc_no` varchar(50) DEFAULT NULL,
-  `bank_name` varchar(100) DEFAULT NULL,
+  `branch_name` varchar(100) DEFAULT NULL,
   `routing_number` varchar(50) DEFAULT NULL,
   `card_no` varchar(50) DEFAULT NULL,
   `exp_date` date DEFAULT NULL,
-  `cvv` varchar(10) DEFAULT NULL
+  `cvv` varchar(10) DEFAULT NULL,
+  `bank_code` varchar(4) DEFAULT NULL,
+  `balance` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -150,7 +152,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`uid`, `nid`, `first_name`, `last_name`, `email`, `phone`, `dob`, `created_at`, `Password`) VALUES
-(1, '3770002020', 'Prottoy', 'Roy', 'prottoyroy@test.com', '01822222222', '2003-01-01', '2025-12-21 18:21:49', '$2b$10$ah4Oc/2mxglHmfrBk4GB5OHoAy8js3kJygu4msxiadYega9.SGI3O');
+(1, '28839992845', 'Prottoy', 'Roy', 'prottoy@test.com', '0189033224', '2003-04-07', '2025-12-21 21:18:24', '$2b$10$5VIo2MRiIWR4xIDg/To7BOU2Bg.I6moQZE1FR7nBwMtz06UrG16k6');
 
 --
 -- Indexes for dumped tables
@@ -267,7 +269,7 @@ ALTER TABLE `transaction_record`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables

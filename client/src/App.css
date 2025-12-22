@@ -1,2 +1,197 @@
+/* Add tile styles */
+.add-tile {
+	border: 2px dashed rgba(99, 102, 241, 0.3);
+	background: rgba(99, 102, 241, 0.05);
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	transition: all 0.2s ease;
+	min-height: 120px;
+}
+.add-tile:hover {
+	border-color: rgba(99, 102, 241, 0.6);
+	background: rgba(99, 102, 241, 0.1);
+}
+.add-tile__icon {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: rgba(99, 102, 241, 0.15);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 24px;
+	color: var(--primary);
+}
+.add-tile__title {
+	font-weight: 600;
+	margin: 0;
+	color: var(--primary);
+	text-align: center;
+}
+.add-tile__subtitle {
+	font-size: 13px;
+	color: var(--muted);
+	margin: 4px 0 0 0;
+	text-align: center;
+}
+
+/* Modal styles */
+.modal {
+	position: fixed;
+	inset: 0;
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	animation: modalFadeIn 0.2s ease;
+}
+
+@keyframes modalFadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+.modal__overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(11, 15, 26, 0.75);
+	backdrop-filter: blur(8px);
+}
+
+.modal__content {
+	position: relative;
+	width: 92vw;
+	max-width: 480px;
+	background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+	background-color: var(--bg-elev);
+	border: 1px solid var(--stroke);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow);
+	animation: modalSlideIn 0.3s ease;
+	overflow: hidden;
+}
+
+@keyframes modalSlideIn {
+	from {
+		transform: translateY(-20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+.modal__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 20px 16px 20px;
+	border-bottom: 1px solid var(--stroke);
+}
+
+.modal__title {
+	margin: 0;
+	font-size: 20px;
+	font-weight: 700;
+	color: var(--text);
+}
+
+.modal__close {
+	border: none;
+	background: rgba(255,255,255,0.06);
+	font-size: 20px;
+	cursor: pointer;
+	color: var(--muted);
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 8px;
+	transition: all 0.2s ease;
+	border: 1px solid rgba(255,255,255,0.08);
+}
+
+.modal__close:hover {
+	background: rgba(255, 255, 255, 0.12);
+	color: var(--text);
+}
+
+.modal__body {
+	padding: 20px;
+	display: grid;
+	gap: 14px;
+}
+
+.modal__footer {
+	padding: 16px 20px 20px 20px;
+	display: flex;
+	gap: 10px;
+	justify-content: flex-end;
+	border-top: 1px solid var(--stroke);
+}
+
+.form__label {
+	display: grid;
+	gap: 8px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--text);
+}
+
+.form__input {
+	height: 44px;
+	border: 1px solid rgba(255,255,255,0.1);
+	border-radius: var(--radius-sm);
+	padding: 0 14px;
+	font-size: 15px;
+	transition: all 0.2s ease;
+	background: rgba(255,255,255,0.06);
+	color: var(--text);
+	font-family: var(--font-sans);
+}
+
+.form__input:focus {
+	outline: none;
+	border-color: var(--brand-400);
+	box-shadow: 0 0 0 4px rgba(43,134,255,0.18);
+}
+
+.form__input::placeholder {
+	color: var(--muted);
+}
+
+.form__error {
+	color: var(--danger);
+	padding: 0 20px;
+	margin: -8px 0 8px 0;
+	font-size: 14px;
+}
+
+/* Delete button for payment cards */
+.delete-btn {
+  border: none;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(1.05);
+}
+
 /* Project-specific component overrides can live here if needed. */
 /* Intentionally minimal to avoid conflicting with global design system. */

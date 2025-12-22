@@ -14,6 +14,10 @@ app.get('/', (req,res) => {
 const userAuthRoutes = require('./modules/userAuth');
 app.use("/auth/", userAuthRoutes);
 
+const userPaymentMethods = require('./modules/paymentMethod');
+app.use("/payMethods/", userPaymentMethods);
+
+
 app.listen(port, () => {
     console.log(`Running on port ${port}`)
 })
