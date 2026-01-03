@@ -21,14 +21,14 @@ export default function Login() {
         email,
         pass: password
       })
-      
+
       if (response.status === 200) {
         const { fname, lname, uid } = response.data
-        localStorage.setItem('user', JSON.stringify({ 
-          firstName: fname, 
+        localStorage.setItem('user', JSON.stringify({
+          firstName: fname,
           lastName: lname,
           uid,
-          email 
+          email
         }))
         window.dispatchEvent(new Event('storage'))
         navigate('/dashboard')
@@ -49,25 +49,25 @@ export default function Login() {
 
   return (
     <section className="section">
-      <div className="container" style={{ maxWidth: 520 }}>
+      <div className="container auth-container">
         <div className="auth-card">
           <h2 className="section-title">Welcome back</h2>
           <p className="section-sub">Log in to your ThreeSeventyPay account.</p>
           {error && (
-            <div style={{ marginBottom: 12, color: 'var(--danger)' }}>{error}</div>
+            <div className="form-error">{error}</div>
           )}
           <form onSubmit={onSubmit}>
-            <div className="field">
-              <label>Email</label>
+            <div className="input-group">
+              <label className="label">Email</label>
               <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" />
             </div>
-            <div className="field">
-              <label>Password</label>
+            <div className="input-group">
+              <label className="label">Password</label>
               <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
             </div>
             <div className="form-actions">
               <button className="btn btn-primary" type="submit">Log In</button>
-              <Link to="/signup" className="btn btn-secondary" style={{ textDecoration: 'none' }}>Create account</Link>
+              <Link to="/signup" className="btn btn-secondary">Create account</Link>
             </div>
           </form>
         </div>

@@ -31,7 +31,7 @@ export default function Signup() {
         dob,
         pass: password
       })
-      
+
       if (response.status === 201) {
         localStorage.setItem('user', JSON.stringify({ firstName, lastName, email, phone, nid, dob }))
         window.dispatchEvent(new Event('storage'))
@@ -48,53 +48,53 @@ export default function Signup() {
       } else {
         setError('An error occurred during signup. Please try again.')
       }
-      
+
     }
   }
 
   return (
     <section className="section">
-      <div className="container" style={{ maxWidth: 520 }}>
+      <div className="container auth-container">
         <div className="auth-card">
           <h2 className="section-title">Create your account</h2>
           <p className="section-sub">Start accepting payments in minutes.</p>
           {error && (
-            <div style={{ marginBottom: 12, color: 'var(--danger)' }}>{error}</div>
+            <div className="form-error">{error}</div>
           )}
           <form onSubmit={onSubmit}>
             <div className="field-grid">
-              <div className="field">
-                <label>First name</label>
+              <div className="input-group">
+                <label className="label">First name</label>
                 <input className="input" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Linus" />
               </div>
-              <div className="field">
-                <label>Last name</label>
+              <div className="input-group">
+                <label className="label">Last name</label>
                 <input className="input" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Torvalds" />
               </div>
             </div>
-            <div className="field">
-              <label>Email</label>
+            <div className="input-group">
+              <label className="label">Email</label>
               <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" />
             </div>
-            <div className="field">
-              <label>Phone</label>
+            <div className="input-group">
+              <label className="label">Phone</label>
               <input className="input" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+880 1712345678" />
             </div>
-            <div className="field">
-              <label>National ID</label>
+            <div className="input-group">
+              <label className="label">National ID</label>
               <input className="input" type="text" value={nid} onChange={(e) => setNID(e.target.value)} placeholder="44000000000" />
             </div>
-            <div className="field">
-              <label>Date of Birth</label>
+            <div className="input-group">
+              <label className="label">Date of Birth</label>
               <input className="input" type="date" value={dob} onChange={(e) => setDob(e.target.value)} />
             </div>
-            <div className="field">
-              <label>Password</label>
+            <div className="input-group">
+              <label className="label">Password</label>
               <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
             </div>
             <div className="form-actions">
               <button className="btn btn-primary" type="submit">Sign Up</button>
-              <Link to="/login" className="btn btn-secondary" style={{ textDecoration: 'none' }}>Log in</Link>
+              <Link to="/login" className="btn btn-secondary">Log in</Link>
             </div>
           </form>
         </div>

@@ -1,9 +1,9 @@
 export default function Footer() {
   return (
     <footer className="footer">
-      <div className="container" style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <span>© {new Date().getFullYear()} ThreeSeventyPay</span>
-        <div className="links">
+      <div className="container footer-inner">
+        <span className="copyright">© {new Date().getFullYear()} ThreeSeventyPay</span>
+        <div className="footer-links">
           <a href="#">Docs</a>
           <a href="#">API</a>
           <a href="#">Status</a>

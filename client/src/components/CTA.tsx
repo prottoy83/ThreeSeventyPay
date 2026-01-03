@@ -1,14 +1,16 @@
 export default function CTA() {
   return (
     <section className="section">
-      <div className="container cta">
-        <div>
-          <h3 style={{ marginBottom: 6 }}>Ready to get started?</h3>
-          <p>Join thousands of businesses building with ThreeSeventyPay.</p>
-        </div>
-        <div style={{ display:'flex', gap:10 }}>
-          <button className="btn btn-primary">Create Account</button>
-          <button className="btn btn-ghost">Talk to Sales</button>
+      <div className="container">
+        <div className="cta-card">
+          <div className="cta-content">
+            <h2 className="cta-title">Ready for AI-driven payments?</h2>
+            <p className="cta-sub">Join thousands predicting their expenses and saving smarter.</p>
+          </div>
+          <div className="cta-actions">
+            <button className="btn btn-primary">Create Free Account</button>
+            <button className="btn btn-secondary">Try Demo</button>
+          </div>
         </div>
       </div>
     </section>

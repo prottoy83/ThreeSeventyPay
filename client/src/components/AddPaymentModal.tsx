@@ -65,36 +65,47 @@ export default function AddPaymentModal({ isOpen, type, uid, onClose, onAdded }:
           <button className="modal__close" onClick={onClose}>✕</button>
         </div>
 
-        {type === 'bank' ? (
-          <div className="modal__body">
-            <label className="form__label">Bank Name
-              <input className="form__input" value={bank_name} onChange={e => setBankName(e.target.value)} placeholder="e.g. Chase" />
-            </label>
-            <label className="form__label">Branch Name
-              <input className="form__input" value={branch_name} onChange={e => setBranchName(e.target.value)} placeholder="e.g. Downtown" />
-            </label>
-            <label className="form__label">Account Number
-              <input className="form__input" value={acc_no} onChange={e => setAccNo(e.target.value)} placeholder="e.g. 123456789" />
-            </label>
-            <label className="form__label">Routing Number
-              <input className="form__input" value={routing_number} onChange={e => setRoutingNumber(e.target.value)} placeholder="e.g. 1100000" />
-            </label>
-          </div>
-        ) : (
-          <div className="modal__body">
-            <label className="form__label">Card Number
-              <input className="form__input" value={card_no} onChange={e => setCardNo(e.target.value)} placeholder="e.g. 4242 4242 4242 4242" />
-            </label>
-            <label className="form__label">Expiry Date
-              <input className="form__input" type="date" value={exp_date} onChange={e => setExpDate(e.target.value)} />
-            </label>
-            <label className="form__label">CVV
-              <input className="form__input" value={cvv} onChange={e => setCvv(e.target.value)} placeholder="e.g. 123" />
-            </label>
-          </div>
-        )}
+        <div className="modal__body">
+          {type === 'bank' ? (
+            <>
+              <div className="input-group">
+                <label className="label">Bank Name</label>
+                <input className="input" value={bank_name} onChange={e => setBankName(e.target.value)} placeholder="e.g. Chase" />
+              </div>
+              <div className="input-group">
+                <label className="label">Branch Name</label>
+                <input className="input" value={branch_name} onChange={e => setBranchName(e.target.value)} placeholder="e.g. Downtown" />
+              </div>
+              <div className="input-group">
+                <label className="label">Account Number</label>
+                <input className="input" value={acc_no} onChange={e => setAccNo(e.target.value)} placeholder="e.g. 123456789" />
+              </div>
+              <div className="input-group">
+                <label className="label">Routing Number</label>
+                <input className="input" value={routing_number} onChange={e => setRoutingNumber(e.target.value)} placeholder="e.g. 1100000" />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="input-group">
+                <label className="label">Card Number</label>
+                <input className="input" value={card_no} onChange={e => setCardNo(e.target.value)} placeholder="e.g. 4242 4242 4242 4242" />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="input-group">
+                  <label className="label">Expiry Date</label>
+                  <input className="input" type="date" value={exp_date} onChange={e => setExpDate(e.target.value)} />
+                </div>
+                <div className="input-group">
+                  <label className="label">CVV</label>
+                  <input className="input" value={cvv} onChange={e => setCvv(e.target.value)} placeholder="e.g. 123" />
+                </div>
+              </div>
+            </>
+          )}
 
-        {error && <p className="form__error">{error}</p>}
+          {error && <p className="form__error">{error}</p>}
+        </div>
 
         <div className="modal__footer">
           <button className="btn btn-secondary" onClick={onClose} disabled={saving}>Cancel</button>
