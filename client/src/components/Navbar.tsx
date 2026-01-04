@@ -80,7 +80,7 @@ export default function Navbar() {
                       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
                       <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                     </svg>
-                    Currency Converter
+                    Currency Rate
                   </button>
                   <button className="dropdown-item" onClick={handleLogout}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">

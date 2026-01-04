@@ -3,12 +3,24 @@ import { useNavigate } from 'react-router-dom'
 import AddPaymentModal from '../components/AddPaymentModal'
 import AddMoneyModal from '../components/AddMoneyModal'
 import CreatePaymentLinkModal from '../components/CreatePaymentLinkModal'
+import PaymentModal from '../components/PaymentModal'
 
 type User = {
   firstName?: string
   lastName?: string
   email?: string
   uid?: string
+}
+
+type Transaction = {
+  tm_id: number
+  sender_id: number
+  recipient_id: number | null
+  amount: number
+  description: string
+  transaction_type: string
+  timestamp: string
+  status: string
 }
 
 type PaymentMethod = {
@@ -28,6 +40,7 @@ export default function Dashboard() {
   const [totalbalance, setBalance] = useState(0)
   const [user, setUser] = useState<User | null>(null)
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState<'bank' | 'card' | null>(null)
 
@@ -35,6 +48,7 @@ export default function Dashboard() {
   const [transactionPmId, setTransactionPmId] = useState<number | null>(null)
 
   const [showPaymentLinkModal, setShowPaymentLinkModal] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
 
   useEffect(() => {
     try {
@@ -53,8 +67,21 @@ export default function Dashboard() {
     if (user?.uid) {
       fetchTotalBalance()
       fetchPaymentMethods()
+      fetchTransactions()
     }
   }, [user])
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch(`http://localhost:5990/transactions/history/${user?.uid}`)
+      if (response.ok) {
+        const data = await response.json()
+        setTransactions(data || [])
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   const fetchTotalBalance = async () => {
     try {
@@ -129,14 +156,6 @@ export default function Dashboard() {
   const bankAccounts = paymentMethods.filter(pm => pm.method_type === 'bank')
   const cards = paymentMethods.filter(pm => pm.method_type === 'card')
 
-  const expenses = [
-    { id: 1, merchant: 'Amazon', amount: 124.99, date: '2025-12-20', category: 'Shopping' },
-    { id: 2, merchant: 'Netflix', amount: 15.99, date: '2025-12-19', category: 'Entertainment' },
-    { id: 3, merchant: 'Uber', amount: 32.50, date: '2025-12-18', category: 'Transport' },
-    { id: 4, merchant: 'Starbucks', amount: 8.45, date: '2025-12-17', category: 'Food' },
-    { id: 5, merchant: 'Target', amount: 67.23, date: '2025-12-16', category: 'Shopping' },
-  ]
-
   const predictions = [
     { category: 'Shopping', predicted: 450, trend: '+12%' },
     { category: 'Food & Dining', predicted: 320, trend: '-5%' },
@@ -160,7 +179,7 @@ export default function Dashboard() {
             <h2 className="balance-amount">${totalbalance?.toFixed(2)}</h2>
           </div>
           <div className="balance-actions">
-            <button className="btn btn-primary">Send Money</button>
+            <button className="btn btn-primary" onClick={() => setShowPaymentModal(true)}>Payment</button>
             <button className="btn btn-secondary" onClick={openPaymentLinkModal}>Request</button>
           </div>
         </div>
@@ -250,26 +269,53 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Recent Expenses */}
+        {/* Recent Activity */}
         <div className="section-header">
-          <h3 className="section-title">Recent Expenses</h3>
+          <h3 className="section-title">Recent Activity</h3>
         </div>
         <div className="expense-list">
-          {expenses.map((exp) => (
-            <div key={exp.id} className="expense-item">
-              <div className="flex-center-gap">
-                <div className="expense-icon-box">{exp.merchant[0]}</div>
-                <div className="expense-details">
-                  <h4>{exp.merchant}</h4>
-                  <p>{exp.category}</p>
+          {transactions.length === 0 ? (
+            <p style={{ padding: '1rem', color: '#666' }}>No recent activity found.</p>
+          ) : (
+            <>
+              {transactions.slice(0, 5).map((tx) => {
+                const isIncoming = tx.recipient_id === Number(user.uid) || tx.transaction_type === 'REFERRAL' || tx.transaction_type === 'ADD_MONEY';
+                return (
+                  <div key={tx.tm_id} className="expense-item">
+                    <div className="flex-center-gap">
+                      <div className="expense-icon-box" style={{
+                        background: tx.transaction_type === 'REFERRAL' ? '#dcfce7' : '#e0f2fe',
+                        color: tx.transaction_type === 'REFERRAL' ? '#166534' : '#0369a1'
+                      }}>
+                        {tx.transaction_type === 'REFERRAL' ? '🎁' : (tx.description?.[0] || '💸')}
+                      </div>
+                      <div className="expense-details">
+                        <h4>{tx.description || tx.transaction_type}</h4>
+                        <p>{tx.transaction_type.replace('_', ' ')}</p>
+                      </div>
+                    </div>
+                    <div className="expense-amount">
+                      <h4 className={isIncoming ? 'text-success' : 'text-danger'}>
+                        {isIncoming ? '+' : '-'}${Number(tx.amount).toFixed(2)}
+                      </h4>
+                      <p>{new Date(tx.timestamp).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                )
+              })}
+              {transactions.length > 5 && (
+                <div style={{ textAlign: 'center', padding: '1rem' }}>
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => navigate('/transactions')}
+                    style={{ background: 'transparent', border: '1px solid var(--primary)', color: 'var(--primary)' }}
+                  >
+                    Show More Activity &rarr;
+                  </button>
                 </div>
-              </div>
-              <div className="expense-amount">
-                <h4 className="text-danger">-${exp.amount}</h4>
-                <p>{exp.date}</p>
-              </div>
-            </div>
-          ))}
+              )}
+            </>
+          )}
         </div>
 
         {/* Predictions */}
@@ -291,6 +337,20 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
+
+        {/* Payment Modal */}
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          uid={user.uid!}
+          paymentMethods={paymentMethods}
+          onSuccess={() => {
+            fetchTotalBalance()
+            fetchPaymentMethods()
+            fetchTransactions()
+          }}
+        />
+
         {/* Modal */}
         {modalType && (
           <AddPaymentModal
