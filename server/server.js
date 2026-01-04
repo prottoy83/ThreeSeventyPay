@@ -20,6 +20,12 @@ app.use("/payMethods/", userPaymentMethods);
 const paymentLinks = require('./modules/paymentLink');
 app.use("/paylinks/", paymentLinks);
 
+const referralRoutes = require('./modules/referral');
+app.use("/referrals/", referralRoutes);
+
+const currencyRoutes = require('./modules/currency');
+app.use("/currency/", currencyRoutes);
+
 app.listen(port, () => {
     console.log(`Running on port ${port}`)
 })

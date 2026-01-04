@@ -9,6 +9,8 @@ import Login from './pages/Login.tsx'
 import Signup from './pages/Signup.tsx'
 import Dashboard from './pages/Dashboard.tsx'
 import PayLink from './pages/PayLink.tsx'
+import Referrals from './pages/Referrals.tsx'
+import CurrencyConverter from './pages/CurrencyConverter.tsx'
 
 export default function App() {
   return (
@@ -28,6 +30,8 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/referrals" element={<Referrals />} />
+        <Route path="/currency" element={<CurrencyConverter />} />
         <Route path="/pay/:linkId" element={<PayLink />} />
       </Routes>
       <Footer />

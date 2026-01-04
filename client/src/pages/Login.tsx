@@ -23,12 +23,13 @@ export default function Login() {
       })
 
       if (response.status === 200) {
-        const { fname, lname, uid } = response.data
+        const { fname, lname, uid, referral_code } = response.data
         localStorage.setItem('user', JSON.stringify({
           firstName: fname,
           lastName: lname,
           uid,
-          email
+          email,
+          referralCode: referral_code
         }))
         window.dispatchEvent(new Event('storage'))
         navigate('/dashboard')

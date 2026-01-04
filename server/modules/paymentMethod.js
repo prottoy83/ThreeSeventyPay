@@ -79,7 +79,70 @@ router.post('/addMethod/:uid', (req, res) => {
                     console.error('Bank adding error:', err);
                     return res.status(500).json({ message: 'Error, couldn\'t add bank account' });
                 }
-                return res.status(201).json({ message: 'Bank account added successfully', pm_id: result?.insertId });
+
+                const newPmId = result?.insertId;
+
+                // Check for pending referral rewards
+                const checkRewardsQuery = `
+                    SELECT SUM(reward_amount) as total_rewards 
+                    FROM referral 
+                    WHERE referred_id = ? AND reward_amount > 0
+                `;
+
+                db.query(checkRewardsQuery, [req.params.uid], (rewardErr, rewardResult) => {
+                    if (rewardErr) {
+                        console.error('Reward check error:', rewardErr);
+                        return res.status(201).json({
+                            message: 'Bank account added successfully',
+                            pm_id: newPmId
+                        });
+                    }
+
+                    const totalRewards = rewardResult[0]?.total_rewards || 0;
+
+                    if (totalRewards > 0) {
+                        // Add rewards to the new bank account
+                        const updateBalanceQuery = `
+                            UPDATE payment_method 
+                            SET balance = COALESCE(balance, 0) + ? 
+                            WHERE pm_id = ?
+                        `;
+
+                        db.query(updateBalanceQuery, [totalRewards, newPmId], (balanceErr) => {
+                            if (balanceErr) {
+                                console.error('Balance update error:', balanceErr);
+                                return res.status(201).json({
+                                    message: 'Bank account added successfully',
+                                    pm_id: newPmId
+                                });
+                            }
+
+                            // Mark rewards as claimed by setting them to 0
+                            const claimRewardsQuery = `
+                                UPDATE referral 
+                                SET reward_amount = 0 
+                                WHERE referred_id = ? AND reward_amount > 0
+                            `;
+
+                            db.query(claimRewardsQuery, [req.params.uid], (claimErr) => {
+                                if (claimErr) {
+                                    console.error('Claim rewards error:', claimErr);
+                                }
+
+                                return res.status(201).json({
+                                    message: 'Bank account added successfully. Referral rewards transferred!',
+                                    pm_id: newPmId,
+                                    rewards_transferred: totalRewards
+                                });
+                            });
+                        });
+                    } else {
+                        return res.status(201).json({
+                            message: 'Bank account added successfully',
+                            pm_id: newPmId
+                        });
+                    }
+                });
             });
         }
 

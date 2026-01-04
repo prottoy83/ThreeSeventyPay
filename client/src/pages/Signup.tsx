@@ -12,6 +12,7 @@ export default function Signup() {
   const [nid, setNID] = useState('')
   const [dob, setDob] = useState('')
   const [password, setPassword] = useState('')
+  const [referralCode, setReferralCode] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   const onSubmit = async (e: FormEvent) => {
@@ -29,16 +30,18 @@ export default function Signup() {
         email,
         phone,
         dob,
-        pass: password
+        pass: password,
+        referral_code: referralCode
       })
 
       if (response.status === 201) {
-        const { uid, fname, lname, email: userEmail } = response.data
+        const { uid, fname, lname, email: userEmail, referral_code: newReferralCode } = response.data
         localStorage.setItem('user', JSON.stringify({
           uid,
           firstName: fname,
           lastName: lname,
-          email: userEmail
+          email: userEmail,
+          referralCode: newReferralCode
         }))
         window.dispatchEvent(new Event('storage'))
         navigate('/dashboard')
@@ -97,6 +100,10 @@ export default function Signup() {
             <div className="input-group">
               <label className="label">Password</label>
               <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+            </div>
+            <div className="input-group">
+              <label className="label">Referral Code (Optional)</label>
+              <input className="input" type="text" value={referralCode} onChange={(e) => setReferralCode(e.target.value)} placeholder="REF12345" />
             </div>
             <div className="form-actions">
               <button className="btn btn-primary" type="submit">Sign Up</button>
