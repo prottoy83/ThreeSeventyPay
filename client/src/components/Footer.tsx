@@ -4,10 +4,7 @@ export default function Footer() {
       <div className="container footer-inner">
         <span className="copyright">© {new Date().getFullYear()} ThreeSeventyPay</span>
         <div className="footer-links">
-          <a href="#">Docs</a>
-          <a href="#">API</a>
-          <a href="#">Status</a>
-          <a href="#">Privacy</a>
+          <a href="#">About</a>
           <a href="#">Terms</a>
         </div>
       </div>
