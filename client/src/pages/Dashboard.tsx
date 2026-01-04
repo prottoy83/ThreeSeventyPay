@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AddPaymentModal from '../components/AddPaymentModal'
+import AddMoneyModal from '../components/AddMoneyModal'
+import CreatePaymentLinkModal from '../components/CreatePaymentLinkModal'
 
 type User = {
   firstName?: string
@@ -18,6 +20,7 @@ type PaymentMethod = {
   routing_number?: string | null
   card_no?: string | null
   exp_date?: string | null
+  balance?: number
 }
 
 export default function Dashboard() {
@@ -27,6 +30,11 @@ export default function Dashboard() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState<'bank' | 'card' | null>(null)
+
+  const [showAddMoneyModal, setShowAddMoneyModal] = useState(false)
+  const [transactionPmId, setTransactionPmId] = useState<number | null>(null)
+
+  const [showPaymentLinkModal, setShowPaymentLinkModal] = useState(false)
 
   useEffect(() => {
     try {
@@ -96,6 +104,26 @@ export default function Dashboard() {
     }
   }
 
+
+
+  const openAddMoneyModal = (pm_id: number) => {
+    setTransactionPmId(pm_id)
+    setShowAddMoneyModal(true)
+  }
+
+  const closeAddMoneyModal = () => {
+    setShowAddMoneyModal(false)
+    setTransactionPmId(null)
+  }
+
+  const openPaymentLinkModal = () => {
+    setShowPaymentLinkModal(true)
+  }
+
+  const closePaymentLinkModal = () => {
+    setShowPaymentLinkModal(false)
+  }
+
   if (!user) return null
 
   const bankAccounts = paymentMethods.filter(pm => pm.method_type === 'bank')
@@ -129,11 +157,11 @@ export default function Dashboard() {
         <div className="balance-card">
           <div>
             <p className="balance-label">Total Balance</p>
-            <h2 className="balance-amount">${totalbalance}</h2>
+            <h2 className="balance-amount">${totalbalance?.toFixed(2)}</h2>
           </div>
           <div className="balance-actions">
             <button className="btn btn-primary">Send Money</button>
-            <button className="btn btn-secondary">Request</button>
+            <button className="btn btn-secondary" onClick={openPaymentLinkModal}>Request</button>
           </div>
         </div>
 
@@ -151,19 +179,23 @@ export default function Dashboard() {
                   <p className="pm-info-label">{account.bank_name || 'Bank Account'}</p>
                   {account.branch_name && <h2 className="pm-info-value text-xl mb-sm">{account.branch_name}</h2>}
                   <p className="pm-info-value">{last4 ? `•••• ${last4}` : `Account #${account.pm_id}`}</p>
+                  <p className="pm-balance" style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>Balance: ${Number(account.balance || 0).toFixed(2)}</p>
                 </div>
                 <div className="pm-brand">
                   <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
                 </div>
-                <button
-                  className="delete-btn"
-                  onClick={() => deletePaymentMethod(account.pm_id, 'bank account')}
-                  title="Delete"
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2 4h12M5.333 4V2.667a1.333 1.333 0 0 1 1.334-1.334h2.666a1.333 1.333 0 0 1 1.334 1.334V4m2 0v9.333a1.333 1.333 0 0 1-1.334 1.334H4.667a1.333 1.333 0 0 1-1.334-1.334V4h9.334Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
+                <div style={{ display: 'flex', gap: '8px', marginTop: '1rem' }}>
+                  <button className="btn btn-sm btn-primary" onClick={() => openAddMoneyModal(account.pm_id)}>Add Money</button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => deletePaymentMethod(account.pm_id, 'bank account')}
+                    title="Delete"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 4h12M5.333 4V2.667a1.333 1.333 0 0 1 1.334-1.334h2.666a1.333 1.333 0 0 1 1.334 1.334V4m2 0v9.333a1.333 1.333 0 0 1-1.334 1.334H4.667a1.333 1.333 0 0 1-1.334-1.334V4h9.334Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             )
           })}
@@ -189,19 +221,23 @@ export default function Dashboard() {
                 <div>
                   <p className="pm-info-label">Card</p>
                   <p className="pm-info-value">{last4 ? `•••• ${last4}` : `Card #${card.pm_id}`}</p>
+                  <p className="pm-balance" style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>Balance: ${Number(card.balance || 0).toFixed(2)}</p>
                 </div>
                 <div className="pm-brand">
                   <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
                 </div>
-                <button
-                  className="delete-btn"
-                  onClick={() => deletePaymentMethod(card.pm_id, 'card')}
-                  title="Delete"
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2 4h12M5.333 4V2.667a1.333 1.333 0 0 1 1.334-1.334h2.666a1.333 1.333 0 0 1 1.334 1.334V4m2 0v9.333a1.333 1.333 0 0 1-1.334 1.334H4.667a1.333 1.333 0 0 1-1.334-1.334V4h9.334Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
+                <div style={{ display: 'flex', gap: '8px', marginTop: '1rem' }}>
+                  <button className="btn btn-sm btn-primary" onClick={() => openAddMoneyModal(card.pm_id)}>Add Money</button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => deletePaymentMethod(card.pm_id, 'card')}
+                    title="Delete"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 4h12M5.333 4V2.667a1.333 1.333 0 0 1 1.334-1.334h2.666a1.333 1.333 0 0 1 1.334 1.334V4m2 0v9.333a1.333 1.333 0 0 1-1.334 1.334H4.667a1.333 1.333 0 0 1-1.334-1.334V4h9.334Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             )
           })}
@@ -265,6 +301,28 @@ export default function Dashboard() {
             onAdded={() => { closeModal(); fetchPaymentMethods() }}
           />
         )}
+
+        {/* Add Money Modal */}
+        <AddMoneyModal
+          isOpen={showAddMoneyModal}
+          pm_id={transactionPmId}
+          onClose={closeAddMoneyModal}
+          onSuccess={() => {
+            closeAddMoneyModal()
+            fetchTotalBalance()
+            fetchPaymentMethods()
+          }}
+        />
+
+        {/* Create Payment Link Modal */}
+        <CreatePaymentLinkModal
+          isOpen={showPaymentLinkModal}
+          uid={user.uid!}
+          onClose={closePaymentLinkModal}
+          onCreated={() => {
+            // Optionally refresh data or show success message
+          }}
+        />
       </div>
     </section>
   )

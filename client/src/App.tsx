@@ -8,6 +8,7 @@ import Footer from './components/Footer'
 import Login from './pages/Login.tsx'
 import Signup from './pages/Signup.tsx'
 import Dashboard from './pages/Dashboard.tsx'
+import PayLink from './pages/PayLink.tsx'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/pay/:linkId" element={<PayLink />} />
       </Routes>
       <Footer />
     </div>

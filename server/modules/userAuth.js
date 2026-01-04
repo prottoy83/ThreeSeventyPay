@@ -16,26 +16,30 @@ router.post("/signup", async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
-    db.query(query, [nid, fname, lname, email, phone, dob, hashedPass], (err) => {
-        if (err) {
-          console.log(err.message)
-          if (err.code === "ER_DUP_ENTRY") {
-            return res.status(409).json({
-              message: "Email already exists"
-            });
-          }
-
-          return res.status(500).json({
-            
-            error: "Database error"
+    db.query(query, [nid, fname, lname, email, phone, dob, hashedPass], (err, result) => {
+      if (err) {
+        console.log(err.message)
+        if (err.code === "ER_DUP_ENTRY") {
+          return res.status(409).json({
+            message: "Email already exists"
           });
         }
 
-        
-        return res.status(201).json({
-          message: "User registered successfully"
+        return res.status(500).json({
+
+          error: "Database error"
         });
       }
+
+
+      return res.status(201).json({
+        message: "User registered successfully",
+        uid: result.insertId,
+        fname,
+        lname,
+        email
+      });
+    }
     );
 
   } catch (err) {

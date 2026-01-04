@@ -7,7 +7,7 @@ const port = 5990
 require('./config/db')
 app.use(cors())
 app.use(express.json());
-app.get('/', (req,res) => {
+app.get('/', (req, res) => {
     res.send('ThreeSeventyProject')
 })
 
@@ -17,6 +17,8 @@ app.use("/auth/", userAuthRoutes);
 const userPaymentMethods = require('./modules/paymentMethod');
 app.use("/payMethods/", userPaymentMethods);
 
+const paymentLinks = require('./modules/paymentLink');
+app.use("/paylinks/", paymentLinks);
 
 app.listen(port, () => {
     console.log(`Running on port ${port}`)

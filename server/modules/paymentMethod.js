@@ -3,8 +3,9 @@ const db = require("../config/db");
 
 const router = express.Router();
 
-router.get('/method/:uid', (req,res) => {
-    const query = "SELECT pm_id, method_type, acc_no, routing_number, card_no, exp_date, branch_name FROM payment_method WHERE user_id = ?"
+
+router.get('/method/:uid', (req, res) => {
+    const query = "SELECT pm_id, method_type, acc_no, routing_number, card_no, exp_date, branch_name, balance FROM payment_method WHERE user_id = ?"
 
     db.query(query, [req.params.uid], (err, results) => {
         if (err) {
@@ -16,11 +17,30 @@ router.get('/method/:uid', (req,res) => {
     })
 })
 
-router.get('/totalBalance/:uid', (req,res)=> {
+router.put('/addMoney', (req, res) => {
+    const { pm_id, amount } = req.body;
+
+    if (!pm_id || !amount || amount <= 0) {
+        return res.status(400).json({ message: 'Invalid payment method or amount' });
+    }
+
+    const query = "UPDATE payment_method SET balance = CASE WHEN balance IS NULL THEN ? ELSE balance + ? END WHERE pm_id = ?";
+
+    db.query(query, [amount, amount, pm_id], (err, result) => {
+        if (err) {
+            console.error('Add money error:', err);
+            return res.status(500).json({ message: 'Failed to add money' });
+        }
+        return res.status(200).json({ message: 'Money added successfully' });
+    });
+});
+
+
+router.get('/totalBalance/:uid', (req, res) => {
     const query = "SELECT SUM(balance) as totalBalance FROM payment_method WHERE user_id = ?"
 
-    db.query(query, [req.params.uid], (err, result)=> {
-        if(err){
+    db.query(query, [req.params.uid], (err, result) => {
+        if (err) {
             console.error('Balance error:', err);
             return res.status(500).json({ message: "Could not get balance" });
         }
@@ -62,7 +82,7 @@ router.post('/addMethod/:uid', (req, res) => {
                 return res.status(201).json({ message: 'Bank account added successfully', pm_id: result?.insertId });
             });
         }
-        
+
         else {
             const query = `
                 INSERT INTO payment_method 
@@ -89,7 +109,7 @@ router.delete('/deleteMethod/:pm_id', (req, res) => {
             console.error('Delete error:', err);
             return res.status(500).json({ message: 'Error deleting payment method' });
         }
-        
+
         return res.status(200).json({ message: 'Payment method deleted successfully' });
     })
 })

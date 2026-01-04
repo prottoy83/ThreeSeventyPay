@@ -33,7 +33,13 @@ export default function Signup() {
       })
 
       if (response.status === 201) {
-        localStorage.setItem('user', JSON.stringify({ firstName, lastName, email, phone, nid, dob }))
+        const { uid, fname, lname, email: userEmail } = response.data
+        localStorage.setItem('user', JSON.stringify({
+          uid,
+          firstName: fname,
+          lastName: lname,
+          email: userEmail
+        }))
         window.dispatchEvent(new Event('storage'))
         navigate('/dashboard')
       }

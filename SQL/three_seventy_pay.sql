@@ -93,9 +93,12 @@ CREATE TABLE `payment_method` (
 CREATE TABLE `pay_link` (
   `link_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `pm_id` int(11) DEFAULT NULL,
   `url` varchar(500) DEFAULT NULL,
   `amount` decimal(10,2) DEFAULT NULL,
   `expiry` datetime DEFAULT NULL,
+  `used` tinyint(1) DEFAULT 0,
+  `used_at` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -191,7 +194,9 @@ ALTER TABLE `payment_method`
 --
 ALTER TABLE `pay_link`
   ADD PRIMARY KEY (`link_id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD UNIQUE KEY `idx_url` (`url`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `pm_id` (`pm_id`);
 
 --
 -- Indexes for table `referral`
@@ -303,7 +308,8 @@ ALTER TABLE `payment_method`
 -- Constraints for table `pay_link`
 --
 ALTER TABLE `pay_link`
-  ADD CONSTRAINT `pay_link_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`uid`);
+  ADD CONSTRAINT `pay_link_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`uid`),
+  ADD CONSTRAINT `pay_link_ibfk_2` FOREIGN KEY (`pm_id`) REFERENCES `payment_method` (`pm_id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `referral`
