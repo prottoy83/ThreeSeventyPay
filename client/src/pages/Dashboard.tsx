@@ -4,6 +4,7 @@ import AddPaymentModal from '../components/AddPaymentModal'
 import AddMoneyModal from '../components/AddMoneyModal'
 import CreatePaymentLinkModal from '../components/CreatePaymentLinkModal'
 import PaymentModal from '../components/PaymentModal'
+import ExpensePrediction from '../components/ExpensePrediction'
 
 type User = {
   firstName?: string
@@ -155,12 +156,6 @@ export default function Dashboard() {
 
   const bankAccounts = paymentMethods.filter(pm => pm.method_type === 'bank')
   const cards = paymentMethods.filter(pm => pm.method_type === 'card')
-
-  const predictions = [
-    { category: 'Shopping', predicted: 450, trend: '+12%' },
-    { category: 'Food & Dining', predicted: 320, trend: '-5%' },
-    { category: 'Transportation', predicted: 180, trend: '+8%' },
-  ]
 
   return (
     <section className="section">
@@ -318,25 +313,8 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Predictions */}
-        <div className="section-header">
-          <h3 className="section-title">Spending Predictions (Next Month)</h3>
-        </div>
-        <div className="dashboard-grid">
-          {predictions.map((pred, i) => (
-            <div key={i} className="card prediction-card">
-              <p className="pm-info-label">{pred.category}</p>
-              <div className="prediction-value">
-                <h3 className="prediction-amount">${pred.predicted}</h3>
-                <span
-                  className={`badge ${pred.trend.startsWith('+') ? 'badge-danger' : 'badge-success'}`}
-                >
-                  {pred.trend}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* AI-Powered Expense Predictions */}
+        <ExpensePrediction />
 
         {/* Payment Modal */}
         <PaymentModal

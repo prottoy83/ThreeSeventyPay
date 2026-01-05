@@ -1,6 +1,7 @@
 const express = require("express");
 const db = require("../config/db");
 const { nanoid } = require("nanoid");
+const { generatePredictionsForUser } = require("./expensePrediction");
 
 const router = express.Router();
 
@@ -186,8 +187,8 @@ router.post("/pay/:url", (req, res) => {
                         // Create transaction record
                         const transactionQuery = `
               INSERT INTO transaction_record 
-              (sender_id, recipient_id, pm_id, amount, status)
-              VALUES (?, ?, ?, ?, 'Completed')
+              (sender_id, recipient_id, pm_id, amount, transaction_type, description, status)
+              VALUES (?, ?, ?, ?, 'PAY_LINK', 'Payment via link', 'SUCCESS')
             `;
 
                         db.query(
@@ -224,6 +225,17 @@ router.post("/pay/:url", (req, res) => {
                                                 res.status(500).json({ message: "Failed to commit transaction" });
                                             });
                                         }
+
+                                        // Trigger AI predictions for both payer and recipient
+                                        generatePredictionsForUser(payer_id, (predErr) => {
+                                            if (predErr) console.error('Payer prediction error:', predErr);
+                                            else console.log(`✅ AI predictions updated for payer ${payer_id}`);
+                                        });
+
+                                        generatePredictionsForUser(link.user_id, (predErr) => {
+                                            if (predErr) console.error('Recipient prediction error:', predErr);
+                                            else console.log(`✅ AI predictions updated for recipient ${link.user_id}`);
+                                        });
 
                                         return res.status(200).json({
                                             message: "Payment successful",

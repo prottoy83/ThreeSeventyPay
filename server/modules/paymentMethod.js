@@ -1,5 +1,6 @@
 const express = require("express");
 const db = require("../config/db");
+const { generatePredictionsForUser } = require("./expensePrediction");
 
 const router = express.Router();
 
@@ -24,14 +25,37 @@ router.put('/addMoney', (req, res) => {
         return res.status(400).json({ message: 'Invalid payment method or amount' });
     }
 
-    const query = "UPDATE payment_method SET balance = CASE WHEN balance IS NULL THEN ? ELSE balance + ? END WHERE pm_id = ?";
-
-    db.query(query, [amount, amount, pm_id], (err, result) => {
-        if (err) {
-            console.error('Add money error:', err);
-            return res.status(500).json({ message: 'Failed to add money' });
+    // First get the user_id for this pm_id to record the transaction
+    db.query("SELECT user_id FROM payment_method WHERE pm_id = ?", [pm_id], (err, results) => {
+        if (err || results.length === 0) {
+            return res.status(404).json({ message: "Payment method not found" });
         }
-        return res.status(200).json({ message: 'Money added successfully' });
+        const uid = results[0].user_id;
+
+        const query = "UPDATE payment_method SET balance = CASE WHEN balance IS NULL THEN ? ELSE balance + ? END WHERE pm_id = ?";
+        db.query(query, [amount, amount, pm_id], (err, result) => {
+            if (err) {
+                console.error('Add money error:', err);
+                return res.status(500).json({ message: 'Failed to add money' });
+            }
+
+            // Record transaction
+            const recordQuery = "INSERT INTO transaction_record (sender_id, pm_id, amount, transaction_type, description, status) VALUES (?, ?, ?, 'ADD_MONEY', 'Deposited money to account', 'SUCCESS')";
+            db.query(recordQuery, [uid, pm_id, amount], (txErr) => {
+                if (txErr) console.error('Failed to record addMoney transaction:', txErr);
+
+                // Trigger AI prediction generation in background
+                generatePredictionsForUser(uid, (predErr) => {
+                    if (predErr) {
+                        console.error('Background prediction generation error:', predErr);
+                    } else {
+                        console.log(`✅ AI predictions updated for user ${uid}`);
+                    }
+                });
+
+                return res.status(200).json({ message: 'Money added successfully' });
+            });
+        });
     });
 });
 
@@ -125,14 +149,18 @@ router.post('/addMethod/:uid', (req, res) => {
                             `;
 
                             db.query(claimRewardsQuery, [req.params.uid], (claimErr) => {
-                                if (claimErr) {
-                                    console.error('Claim rewards error:', claimErr);
-                                }
+                                if (claimErr) console.error('Claim rewards error:', claimErr);
 
-                                return res.status(201).json({
-                                    message: 'Bank account added successfully. Referral rewards transferred!',
-                                    pm_id: newPmId,
-                                    rewards_transferred: totalRewards
+                                // Record in transaction_record
+                                const recordTxQuery = "INSERT INTO transaction_record (sender_id, pm_id, amount, transaction_type, description, status) VALUES (?, ?, ?, 'REFERRAL', 'Referral signup reward', 'SUCCESS')";
+                                db.query(recordTxQuery, [req.params.uid, newPmId, totalRewards], (txErr) => {
+                                    if (txErr) console.error('Failed to record referral signup reward:', txErr);
+
+                                    return res.status(201).json({
+                                        message: 'Bank account added successfully. Referral rewards transferred!',
+                                        pm_id: newPmId,
+                                        rewards_transferred: totalRewards
+                                    });
                                 });
                             });
                         });

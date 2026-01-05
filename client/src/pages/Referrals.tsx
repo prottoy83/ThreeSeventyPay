@@ -209,19 +209,87 @@ export default function Referrals() {
                     </div>
 
                     {/* Redeemable Balance */}
-                    <div className="balance-card" style={{ border: '1px solid #10b98133', background: '#064e3b11' }}>
-                        <div>
-                            <p className="balance-label" style={{ color: '#10b981' }}>Current Redeemable</p>
-                            <h2 className="balance-amount" style={{ color: '#10b981' }}>${currentRedeemable.toFixed(2)}</h2>
-                        </div>
-                        <div className="balance-actions">
+                    <div className="balance-card" style={{
+                        border: '1px solid rgba(16, 185, 129, 0.2)',
+                        background: 'linear-gradient(135deg, rgba(6, 78, 59, 0.08) 0%, rgba(16, 185, 129, 0.03) 100%)',
+                        position: 'relative',
+                        overflow: 'hidden'
+                    }}>
+                        {/* Decorative glow effect */}
+                        <div style={{
+                            position: 'absolute',
+                            top: '-50%',
+                            right: '-50%',
+                            width: '200%',
+                            height: '200%',
+                            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)',
+                            pointerEvents: 'none'
+                        }}></div>
+
+                        <div style={{ position: 'relative', zIndex: 1 }}>
+                            <div style={{ marginBottom: '1.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                    <span style={{ fontSize: '1.5rem' }}>💰</span>
+                                    <p className="balance-label" style={{ color: '#10b981', margin: 0, fontWeight: 600 }}>Current Redeemable</p>
+                                </div>
+                                <h2 className="balance-amount" style={{
+                                    color: '#10b981',
+                                    fontSize: '3rem',
+                                    marginBottom: '0.25rem'
+                                }}>${currentRedeemable.toFixed(2)}</h2>
+                                <p style={{
+                                    color: '#64748b',
+                                    fontSize: '0.85rem',
+                                    margin: 0
+                                }}>
+                                    {currentRedeemable > 0 ? 'Ready to withdraw' : 'No earnings available yet'}
+                                </p>
+                            </div>
+
                             <button
-                                className="btn btn-primary"
+                                className="btn"
                                 onClick={handleTransferClick}
                                 disabled={currentRedeemable <= 0}
-                                style={{ background: '#10b981', borderColor: '#10b981' }}
+                                style={{
+                                    width: '100%',
+                                    background: currentRedeemable > 0
+                                        ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                                        : 'rgba(148, 163, 184, 0.2)',
+                                    color: currentRedeemable > 0 ? 'white' : '#94a3b8',
+                                    border: 'none',
+                                    padding: '0.875rem 1.5rem',
+                                    fontSize: '1rem',
+                                    fontWeight: 600,
+                                    borderRadius: 'var(--radius-md)',
+                                    cursor: currentRedeemable > 0 ? 'pointer' : 'not-allowed',
+                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    boxShadow: currentRedeemable > 0
+                                        ? '0 4px 6px -1px rgba(16, 185, 129, 0.3), 0 2px 4px -2px rgba(16, 185, 129, 0.2)'
+                                        : 'none',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '0.5rem'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (currentRedeemable > 0) {
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(16, 185, 129, 0.4), 0 4px 6px -4px rgba(16, 185, 129, 0.3)';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = currentRedeemable > 0
+                                        ? '0 4px 6px -1px rgba(16, 185, 129, 0.3), 0 2px 4px -2px rgba(16, 185, 129, 0.2)'
+                                        : 'none';
+                                }}
                             >
-                                Transfer Now
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <span>Transfer to Account</span>
                             </button>
                         </div>
                     </div>

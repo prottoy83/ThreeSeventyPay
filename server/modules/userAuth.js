@@ -39,16 +39,26 @@ router.post("/signup", async (req, res) => {
       if (referral_code) {
         const findReferrer = "SELECT uid FROM user WHERE referral_code = ?";
         db.query(findReferrer, [referral_code], (err, referrerResult) => {
-          if (!err && referrerResult.length > 0) {
+          if (err) {
+            console.error("Error finding referrer:", err);
+            return;
+          }
+          if (referrerResult.length > 0) {
             const referrerId = referrerResult[0].uid;
             const insertReferral = `
               INSERT INTO referral (referrer_id, referred_id, reward_amount)
               VALUES (?, ?, ?)
             `;
-            // Default reward amount 50.00
-            db.query(insertReferral, [referrerId, newUserId, 50.00], (err) => {
-              if (err) console.error("Error creating referral record:", err);
+            const rewardAmount = 10.00;
+            db.query(insertReferral, [referrerId, newUserId, rewardAmount], (err) => {
+              if (err) {
+                console.error("Error creating referral record:", err);
+              } else {
+                console.log(`Referral reward of ${rewardAmount} created for user ${referrerId}`);
+              }
             });
+          } else {
+            console.log(`Referral code ${referral_code} not found`);
           }
         });
       }

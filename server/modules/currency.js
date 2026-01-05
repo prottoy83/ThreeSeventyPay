@@ -2,11 +2,26 @@ const express = require("express");
 const axios = require("axios");
 const router = express.Router();
 
+// Approximate BDT exchange rates (updated periodically)
+// These are fallback rates when the API doesn't support BDT
+const BDT_RATES = {
+    USD: 0.0084,  // 1 BDT ≈ 0.0084 USD (1 USD ≈ 119 BDT)
+    EUR: 0.0077,  // 1 BDT ≈ 0.0077 EUR
+    GBP: 0.0066,  // 1 BDT ≈ 0.0066 GBP
+    CNY: 0.061,   // 1 BDT ≈ 0.061 CNY
+    RUB: 0.84,    // 1 BDT ≈ 0.84 RUB
+};
+
 // Get available currencies
 router.get("/currencies", async (req, res) => {
     try {
         const response = await axios.get("https://api.frankfurter.app/currencies");
-        res.status(200).json(response.data);
+        // Add BDT to the list
+        const currencies = {
+            ...response.data,
+            BDT: "Bangladeshi Taka"
+        };
+        res.status(200).json(currencies);
     } catch (error) {
         console.error("Error fetching currencies:", error);
         res.status(500).json({ error: "Failed to fetch currencies" });
@@ -30,16 +45,48 @@ router.get("/convert", async (req, res) => {
             });
         }
 
+        const numAmount = parseFloat(amount);
+
+        // Handle BDT conversions using fallback rates
+        if (from === "BDT" && BDT_RATES[to]) {
+            const converted = numAmount * BDT_RATES[to];
+            const rate = BDT_RATES[to];
+
+            return res.status(200).json({
+                amount: numAmount,
+                from: from,
+                to: to,
+                converted: converted,
+                rate: rate,
+                date: new Date().toISOString().split('T')[0],
+                note: "Using approximate exchange rate"
+            });
+        } else if (to === "BDT" && BDT_RATES[from]) {
+            const converted = numAmount / BDT_RATES[from];
+            const rate = 1 / BDT_RATES[from];
+
+            return res.status(200).json({
+                amount: numAmount,
+                from: from,
+                to: to,
+                converted: converted,
+                rate: rate,
+                date: new Date().toISOString().split('T')[0],
+                note: "Using approximate exchange rate"
+            });
+        }
+
+        // For non-BDT conversions, use Frankfurter API
         const response = await axios.get(
             `https://api.frankfurter.app/latest?amount=${amount}&from=${from}&to=${to}`
         );
 
         res.status(200).json({
-            amount: parseFloat(amount),
+            amount: numAmount,
             from: from,
             to: to,
             converted: response.data.rates[to],
-            rate: response.data.rates[to] / amount,
+            rate: response.data.rates[to] / numAmount,
             date: response.data.date
         });
     } catch (error) {

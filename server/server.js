@@ -26,6 +26,12 @@ app.use("/referrals/", referralRoutes);
 const currencyRoutes = require('./modules/currency');
 app.use("/currency/", currencyRoutes);
 
+const transactionRoutes = require('./modules/transaction');
+app.use("/transactions/", transactionRoutes);
+
+const expensePredictionRoutes = require('./modules/expensePrediction');
+app.use("/predictions/", expensePredictionRoutes);
+
 app.listen(port, () => {
     console.log(`Running on port ${port}`)
 })
