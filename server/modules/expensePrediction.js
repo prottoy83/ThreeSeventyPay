@@ -179,7 +179,8 @@ function trainAndPredict(transactions, targetMonth) {
                 // Create and train neural network
                 const net = new brain.NeuralNetwork({
                     hiddenLayers: [3, 2],
-                    activation: 'sigmoid'
+                    activation: 'sigmoid',
+                    gpu: false
                 });
 
                 net.train(trainingData, {
