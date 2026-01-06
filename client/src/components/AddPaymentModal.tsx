@@ -228,4 +228,3 @@ export default function AddPaymentModal({ isOpen, type, uid, onClose, onAdded }:
     </div>
   )
 }
-

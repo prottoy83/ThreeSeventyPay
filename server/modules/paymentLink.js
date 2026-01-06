@@ -107,9 +107,7 @@ router.post("/pay/:url", (req, res) => {
         }
 
         // Get payment link details
-        const getLinkQuery = `
-      SELECT * FROM pay_link WHERE url = ?
-    `;
+        const getLinkQuery = `SELECT * FROM pay_link WHERE url = ?`;
 
         db.query(getLinkQuery, [url], (err, linkResults) => {
             if (err || linkResults.length === 0) {
@@ -136,9 +134,7 @@ router.post("/pay/:url", (req, res) => {
             }
 
             // Check payer's balance
-            const checkBalanceQuery = `
-        SELECT balance FROM payment_method WHERE pm_id = ? AND user_id = ?
-      `;
+            const checkBalanceQuery = `SELECT balance FROM payment_method WHERE pm_id = ? AND user_id = ?`;
 
             db.query(checkBalanceQuery, [pm_id, payer_id], (err, pmResults) => {
                 if (err || pmResults.length === 0) {
@@ -229,12 +225,12 @@ router.post("/pay/:url", (req, res) => {
                                         // Trigger AI predictions for both payer and recipient
                                         generatePredictionsForUser(payer_id, (predErr) => {
                                             if (predErr) console.error('Payer prediction error:', predErr);
-                                            else console.log(`✅ AI predictions updated for payer ${payer_id}`);
+                                            else console.log(`AI predictions updated for payer ${payer_id}`);
                                         });
 
                                         generatePredictionsForUser(link.user_id, (predErr) => {
                                             if (predErr) console.error('Recipient prediction error:', predErr);
-                                            else console.log(`✅ AI predictions updated for recipient ${link.user_id}`);
+                                            else console.log(`AI predictions updated for recipient ${link.user_id}`);
                                         });
 
                                         return res.status(200).json({

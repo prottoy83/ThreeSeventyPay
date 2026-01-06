@@ -20,8 +20,7 @@ export default function CreatePaymentLinkModal({
     isOpen,
     uid,
     onClose,
-    onCreated,
-}: CreatePaymentLinkModalProps) {
+    onCreated,}: CreatePaymentLinkModalProps) {
     const [amount, setAmount] = useState('')
     const [expiryHours, setExpiryHours] = useState('24')
     const [selectedPmId, setSelectedPmId] = useState<number | null>(null)

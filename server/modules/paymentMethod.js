@@ -6,14 +6,14 @@ const router = express.Router();
 
 
 router.get('/method/:uid', (req, res) => {
-    const query = "SELECT pm_id, method_type, acc_no, routing_number, card_no, exp_date, branch_name, balance FROM payment_method WHERE user_id = ?"
+    const query = "SELECT pm_id, method_type, branch_name, acc_no, routing_number, card_no, exp_date, balance FROM payment_method WHERE user_id = ?"
 
     db.query(query, [req.params.uid], (err, results) => {
         if (err) {
             console.error('Database error:', err);
             return res.status(500).json({ error: 'Database query failed' });
         }
-        console.log('results:', results);
+        
         return res.status(200).json({ methods: results || [] });
     })
 })
@@ -25,7 +25,7 @@ router.put('/addMoney', (req, res) => {
         return res.status(400).json({ message: 'Invalid payment method or amount' });
     }
 
-    // First get the user_id for this pm_id to record the transaction
+    
     db.query("SELECT user_id FROM payment_method WHERE pm_id = ?", [pm_id], (err, results) => {
         if (err || results.length === 0) {
             return res.status(404).json({ message: "Payment method not found" });
@@ -39,17 +39,17 @@ router.put('/addMoney', (req, res) => {
                 return res.status(500).json({ message: 'Failed to add money' });
             }
 
-            // Record transaction
+            
             const recordQuery = "INSERT INTO transaction_record (sender_id, pm_id, amount, transaction_type, description, status) VALUES (?, ?, ?, 'ADD_MONEY', 'Deposited money to account', 'SUCCESS')";
             db.query(recordQuery, [uid, pm_id, amount], (txErr) => {
                 if (txErr) console.error('Failed to record addMoney transaction:', txErr);
 
-                // Trigger AI prediction generation in background
+                
                 generatePredictionsForUser(uid, (predErr) => {
                     if (predErr) {
                         console.error('Background prediction generation error:', predErr);
                     } else {
-                        console.log(`✅ AI predictions updated for user ${uid}`);
+                        console.log(`AI predictions updated for user ${uid}`);
                     }
                 });
 
@@ -78,7 +78,7 @@ router.get('/totalBalance/:uid', (req, res) => {
 router.post('/addMethod/:uid', (req, res) => {
     const { method, acc_no, bank_name, routing_number, card_no, exp_date, cvv } = req.body;
 
-    if (!method || !['bank', 'card'].includes(method)) {
+    if (!method || !['bank','card'].includes(method)) {
         return res.status(400).json({ error: 'Invalid method type. Use "bank" or "card".' });
     }
 
@@ -106,7 +106,7 @@ router.post('/addMethod/:uid', (req, res) => {
 
                 const newPmId = result?.insertId;
 
-                // Check for pending referral rewards
+                
                 const checkRewardsQuery = `
                     SELECT SUM(reward_amount) as total_rewards 
                     FROM referral 
@@ -125,7 +125,7 @@ router.post('/addMethod/:uid', (req, res) => {
                     const totalRewards = rewardResult[0]?.total_rewards || 0;
 
                     if (totalRewards > 0) {
-                        // Add rewards to the new bank account
+                        
                         const updateBalanceQuery = `
                             UPDATE payment_method 
                             SET balance = COALESCE(balance, 0) + ? 
@@ -141,7 +141,7 @@ router.post('/addMethod/:uid', (req, res) => {
                                 });
                             }
 
-                            // Mark rewards as claimed by setting them to 0
+                            
                             const claimRewardsQuery = `
                                 UPDATE referral 
                                 SET reward_amount = 0 
@@ -151,7 +151,7 @@ router.post('/addMethod/:uid', (req, res) => {
                             db.query(claimRewardsQuery, [req.params.uid], (claimErr) => {
                                 if (claimErr) console.error('Claim rewards error:', claimErr);
 
-                                // Record in transaction_record
+                                
                                 const recordTxQuery = "INSERT INTO transaction_record (sender_id, pm_id, amount, transaction_type, description, status) VALUES (?, ?, ?, 'REFERRAL', 'Referral signup reward', 'SUCCESS')";
                                 db.query(recordTxQuery, [req.params.uid, newPmId, totalRewards], (txErr) => {
                                     if (txErr) console.error('Failed to record referral signup reward:', txErr);

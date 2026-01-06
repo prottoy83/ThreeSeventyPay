@@ -124,7 +124,7 @@ export default function PaymentModal({ isOpen, onClose, uid, paymentMethods, onS
                             <option value="">Select Account/Card</option>
                             {paymentMethods.map(pm => (
                                 <option key={pm.pm_id} value={pm.pm_id}>
-                                    {pm.method_type === 'bank' ? `${pm.bank_name} (*${pm.acc_no.slice(-4)})` : `Card (*${pm.card_no.slice(-4)})`} - Balance: ${Number(pm.balance || 0).toFixed(2)}
+                                    {pm.method_type === 'bank' ? `${pm.branch_name} (*${pm.acc_no.slice(-4)})` : `Card (*${pm.card_no.slice(-4)})`} - Balance: ${Number(pm.balance || 0).toFixed(2)}
                                 </option>
                             ))}
                         </select>

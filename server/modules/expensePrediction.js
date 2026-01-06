@@ -1,13 +1,9 @@
 const express = require("express");
-const brain = require("brain.js");
+const brain = require("brain.js/src/index");
 const db = require("../config/db");
 
 const router = express.Router();
 
-/**
- * Helper function to categorize transactions
- * Based on description or recipient name
- */
 function categorizeTransaction(description) {
     const desc = description.toLowerCase();
 
@@ -95,7 +91,7 @@ function prepareTrainingData(transactions) {
         });
     });
 
-    // Create training pairs for each category
+    
     Object.entries(categoryData).forEach(([category, dataPoints]) => {
         // Sort by month
         dataPoints.sort((a, b) => a.month - b.month);
@@ -277,7 +273,7 @@ function generateAndStorePredictions(uid, callback) {
                 return callback(null, result);
             }
 
-            console.log(`💾 Storing ${result.predictions.length} predictions to database...`);
+            console.log(`Storing ${result.predictions.length} predictions to database...`);
 
             // Store predictions in database
             const deleteOldQuery = `
@@ -287,9 +283,9 @@ function generateAndStorePredictions(uid, callback) {
 
             db.query(deleteOldQuery, [uid, targetMonth, targetYear], (delErr) => {
                 if (delErr) {
-                    console.error("❌ Delete old predictions error:", delErr);
-                    console.error("   Query:", deleteOldQuery);
-                    console.error("   Params:", [uid, targetMonth, targetYear]);
+                    console.error("Delete old predictions error:", delErr);
+                    console.error(" Query:", deleteOldQuery);
+                    console.error("Params:", [uid, targetMonth, targetYear]);
                 }
 
                 // Insert new predictions
@@ -313,10 +309,10 @@ function generateAndStorePredictions(uid, callback) {
                             targetYear
                         ], (insertErr) => {
                             if (insertErr) {
-                                console.error("❌ INSERT ERROR:", insertErr.message);
-                                console.error("   SQL:", insertErr.sql);
-                                console.error("   Code:", insertErr.code);
-                                console.error("   Data:", {
+                                console.error("INSERT ERROR:", insertErr.message);
+                                console.error(" SQL:", insertErr.sql);
+                                console.error("Code:", insertErr.code);
+                                console.error("Data:", {
                                     user_id: uid,
                                     category: pred.category,
                                     predicted_amount: pred.predictedAmount,
@@ -327,7 +323,7 @@ function generateAndStorePredictions(uid, callback) {
                                 });
                                 reject(insertErr);
                             } else {
-                                console.log(`   ✅ Inserted ${pred.category}`);
+                                console.log(`Inserted ${pred.category}`);
                                 resolve();
                             }
                         });
@@ -336,12 +332,12 @@ function generateAndStorePredictions(uid, callback) {
 
                 Promise.all(insertPromises)
                     .then(() => {
-                        console.log(`🎉 All ${insertPromises.length} predictions stored successfully!`);
+                        console.log(`All ${insertPromises.length} predictions stored successfully!`);
                         callback(null, result);
                     })
                     .catch(insertErr => {
-                        console.error("❌ Promise.all failed:", insertErr);
-                        callback(null, result); // Still return result even if insert fails
+                        console.error("Promise.all failed:", insertErr);
+                        callback(null, result);
                     });
             });
         } catch (error) {
@@ -351,17 +347,14 @@ function generateAndStorePredictions(uid, callback) {
     });
 }
 
-/**
- * GET /api/predictions/:uid
- * Get expense predictions for next month from database
- */
+
 router.get("/predictions/:uid", (req, res) => {
     const uid = req.params.uid;
     const currentDate = new Date();
-    const targetMonth = currentDate.getMonth() + 2; // Next month
+    const targetMonth = currentDate.getMonth() + 2; 
     const targetYear = currentDate.getFullYear();
 
-    // First, try to get from database
+    
     const query = `
         SELECT category, predicted_amount, historical_average, confidence, updated_at
         FROM ai_prediction 
@@ -375,13 +368,13 @@ router.get("/predictions/:uid", (req, res) => {
             return res.status(500).json({ error: "Failed to fetch predictions" });
         }
 
-        // Check if predictions exist and are recent (less than 24 hours old)
+
         if (predictions && predictions.length > 0) {
             const lastUpdate = new Date(predictions[0].updated_at);
             const hoursSinceUpdate = (Date.now() - lastUpdate.getTime()) / (1000 * 60 * 60);
 
             if (hoursSinceUpdate < 24) {
-                // Return cached predictions
+                
                 const formattedPredictions = predictions.map(p => ({
                     category: p.category,
                     predictedAmount: parseFloat(p.predicted_amount),
@@ -395,13 +388,13 @@ router.get("/predictions/:uid", (req, res) => {
                     success: true,
                     predictions: formattedPredictions,
                     totalPredicted: Math.round(totalPredicted * 100) / 100,
-                    trainingDataPoints: formattedPredictions.length * 4, // Estimate
+                    trainingDataPoints: formattedPredictions.length * 4, 
                     cached: true
                 });
             }
         }
 
-        // If no predictions or outdated, generate new ones
+
         generateAndStorePredictions(uid, (genErr, result) => {
             if (genErr) {
                 return res.status(500).json({
@@ -415,10 +408,7 @@ router.get("/predictions/:uid", (req, res) => {
     });
 });
 
-/**
- * POST /api/predictions/generate/:uid
- * Manually trigger prediction generation
- */
+
 router.post("/generate/:uid", (req, res) => {
     const uid = req.params.uid;
 

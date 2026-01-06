@@ -74,27 +74,27 @@ const ExpensePrediction = () => {
             const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
             const url = `http://localhost:5990/predictions/predictions/${uid}`;
-            console.log('📡 Fetching from:', url);
+            console.log(' Fetching from:', url);
 
             const response = await fetch(url, { signal: controller.signal });
 
             clearTimeout(timeoutId);
 
             if (!response.ok) {
-                console.error('❌ Response not OK:', response.status);
+                console.error(' Response not OK:', response.status);
                 throw new Error('Failed to fetch predictions');
             }
 
             const data = await response.json();
-            console.log('📊 Received data:', data);
+            console.log(' Received data:', data);
             console.log('   - success:', data.success);
             console.log('   - predictions count:', data.predictions?.length);
             console.log('   - predictions:', data.predictions);
 
             setPredictionData(data);
-            console.log('✅ State updated with prediction data');
+            console.log(' State updated with prediction data');
         } catch (error: any) {
-            console.error('❌ Failed to fetch predictions:', error);
+            console.error(' Failed to fetch predictions:', error);
             // Set empty state if fetch fails
             setPredictionData({
                 success: false,
@@ -106,7 +106,7 @@ const ExpensePrediction = () => {
             });
         } finally {
             setLoading(false);
-            console.log('✅ Loading complete');
+            console.log(' Loading complete');
         }
     };
 
@@ -176,7 +176,7 @@ const ExpensePrediction = () => {
         <div className="expense-prediction-container">
             <div className="prediction-header">
                 <div className="header-content">
-                    <h2>🤖 AI Expense Insights</h2>
+                    <h2> AI Expense Insights</h2>
                     <p className="subtitle">Smart predictions based on your spending patterns</p>
                 </div>
                 <div className="tab-switcher">
@@ -186,12 +186,7 @@ const ExpensePrediction = () => {
                     >
                         Predictions
                     </button>
-                    <button
-                        className={`tab-btn ${activeTab === 'insights' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('insights')}
-                    >
-                        Insights
-                    </button>
+                    
                 </div>
             </div>
 

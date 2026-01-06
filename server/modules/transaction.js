@@ -3,7 +3,7 @@ const db = require("../config/db");
 const router = express.Router();
 const { generatePredictionsForUser } = require("./expensePrediction");
 
-// New Payment to Partnered Places
+
 router.post("/payment", (req, res) => {
     const { uid, pm_id, amount, recipient_name, trx_id } = req.body;
 
@@ -15,11 +15,11 @@ router.post("/payment", (req, res) => {
         return res.status(400).json({ error: "TRX ID must be exactly 12 characters" });
     }
 
-    // Start transaction
+    
     db.beginTransaction((err) => {
         if (err) return res.status(500).json({ error: "Transaction start failed" });
 
-        // 1. Check/Update balance of payment method
+        
         const checkBalanceQuery = "SELECT balance FROM payment_method WHERE pm_id = ? AND user_id = ?";
         db.query(checkBalanceQuery, [pm_id, uid], (err, results) => {
             if (err || results.length === 0) {
@@ -33,14 +33,14 @@ router.post("/payment", (req, res) => {
                 return db.rollback(() => res.status(400).json({ error: "Insufficient balance" }));
             }
 
-            // 2. Deduct balance
+            
             const updateBalanceQuery = "UPDATE payment_method SET balance = balance - ? WHERE pm_id = ?";
             db.query(updateBalanceQuery, [paymentAmount, pm_id], (err) => {
                 if (err) {
                     return db.rollback(() => res.status(500).json({ error: "Failed to deduct balance" }));
                 }
 
-                // 3. Record in transaction_record
+                
                 const recordQuery = `
                     INSERT INTO transaction_record 
                     (sender_id, pm_id, amount, transaction_type, trx_id, description, status) 
@@ -59,12 +59,12 @@ router.post("/payment", (req, res) => {
                     db.commit((err) => {
                         if (err) return db.rollback(() => res.status(500).json({ error: "Commit failed" }));
 
-                        // Trigger AI prediction generation in background (don't wait for it)
+                        
                         generatePredictionsForUser(uid, (predErr, predResult) => {
                             if (predErr) {
                                 console.error('Background prediction generation error:', predErr);
                             } else {
-                                console.log(`✅ AI predictions updated for user ${uid}`);
+                                console.log(`AI predictions updated for user ${uid}`);
                             }
                         });
 
@@ -76,7 +76,7 @@ router.post("/payment", (req, res) => {
     });
 });
 
-// Get recent transactions for a user
+
 router.get("/history/:uid", (req, res) => {
     const uid = req.params.uid;
     const query = `
